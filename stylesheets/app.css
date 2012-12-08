@@ -1,0 +1,20 @@
+.content {
+  margin-top: 150px; }
+
+text.label {
+  font-size: 25px; }
+
+text.display {
+  font-size: 40px; }
+
+text.stat {
+  font-size: 120px; }
+  text.stat.district {
+    font-size: 160px; }
+
+#facets {
+  margin-top: 300px;
+  display: none; }
+
+.app .fixed {
+  display: none; }
