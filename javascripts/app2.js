@@ -113,7 +113,7 @@ var data
  * Data is loaded async, callback is called when data
  * is fetched.
  */ 
-d3.csv('data/csv/bevolking.html', function(csv) {
+d3.csv('data/csv/_bevolking.csv', function(csv) {
   console.log(csv);
   data = csv;
   ant = generateDataTree(data);
@@ -131,8 +131,10 @@ d3.csv('data/csv/bevolking.html', function(csv) {
 function drawShapes() {
 
   var path = svg.datum(ant).selectAll('path')
-      .data(partition.nodes)
-    .enter().append('path')
+      .data(partition.nodes);
+
+
+  path.enter().append('path')
       .attr('display', function(d) { return d.depth ? null : 'none'; })
       .attr('d', arc)
       .style('stroke', '#fff')
@@ -159,7 +161,6 @@ function drawShapes() {
     var value = display === 'district' ?
       function(d) { return d.district; } :
       function(d) { 
-        console.log(display);
         return d[display]; 
       };
 
@@ -168,8 +169,14 @@ function drawShapes() {
 
     path.data(partition.value(value).nodes)
       .transition()
+        .each('start', function(){
+          this._listenToEvents = false;
+        })
         .duration(1500)
-        .attrTween('d', arcTween);
+        .attrTween('d', arcTween)
+        .each('end', function() {
+          this._listenToEvents = true;
+        });
   });
 
 
@@ -180,7 +187,10 @@ function drawShapes() {
     path.data(partition.value(function(){ return 1;}).nodes)
       .transition()
         .duration(1500)
-        .attrTween('d', arcTween);
+        .attrTween('d', arcTween)
+        .each('end', function(){
+          this._listenToEvents = true;
+        });
   }, 750);
 
 
@@ -219,7 +229,6 @@ function drawLabel() {
       .style("fill-opacity", 1);
 
   text.text(function(d) {
-    console.log(d);
     return d.name;
   });
 
@@ -239,9 +248,11 @@ function drawLabel() {
  */
 function changeColor(d, i, that) {
 
-  d3.select(that).transition()
-    .duration(250)
-    .style('fill', '#023858');
+  if(that._listenToEvents) {
+    d3.select(that).transition()
+      .duration(250)
+      .style('fill', '#023858');
+    }
 }
 
 
@@ -249,13 +260,14 @@ function changeColor(d, i, that) {
  * Reverts color back to original.
  */
 function revertColor(d, i, that) {
-
+  if(that._listenToEvents) {
   d3.select(that).transition()
     .duration(350)
     .style('fill', function(d) {
       var val =  (d.children ? d : d.parent).name;
       return color(val); 
     });
+  }
 }
 
 
