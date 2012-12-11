@@ -113,7 +113,7 @@ var data
  * Data is loaded async, callback is called when data
  * is fetched.
  */ 
-d3.csv('data/csv/_bevolking.csv', function(csv) {
+d3.csv('data/csv/bevolking.html', function(csv) {
   console.log(csv);
   data = csv;
   ant = generateDataTree(data);
